@@ -7,11 +7,26 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var debug = require('debug')('myapp:server');
+
+var http = require('http');
+
 //加载路由routes/index  routes/users
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();//生成一个express实例
+
+
+//设置端口号3000
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+//启动工程并监听3000端口，成功后打印成功信息
+var server = http.createServer(app);
+//启动网络服务监听端口
+// server.listen(port);
+// server.on('error', onError);
+// server.on('listening', onListening);
 
 
 //设置views文件夹为存放视图文件的目录，及存放文件模板的地方，
@@ -36,8 +51,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname,'public')));
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 //路由控制器
-app.use('/', routes);
-app.use('/users', users);
+// app.use('/', routes);
+// app.use('/users', users);
+
+routes(app);
+
+app.listen(app.get('port'), function() {
+    console.log('Express server listening on port ' + app.get('port'));
+});
 
 // 捕获404错误，并转发到错误处理器
 app.use(function(req, res, next) {
@@ -65,6 +86,61 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+
+
+//端口标准化函数
+function normalizePort(val) {
+    var port = parseInt(val, 10);
+
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
+
+    if (port >= 0) {
+        // port number
+        return port;
+    }
+
+    return false;
+}
+
+//http异常事件处理函数
+function onError(error) {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    var bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+//事件绑定函数
+function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+}
 
 //导出app实例供其他模块调用
 module.exports = app;

@@ -13,26 +13,28 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 //设置端口号3000
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+// var port = normalizePort(process.env.PORT || '3000');
+// app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 //启动工程并监听3000端口，成功后打印成功信息
-var server = http.createServer(app);
+// var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+//启动网络服务监听端口
+// server.listen(port);
+// server.on('error', onError);
+// server.on('listening', onListening);
 
 /**
  * Normalize a port into a number, string, or false.
  */
+
+//端口标准化函数
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
@@ -53,7 +55,7 @@ function normalizePort(val) {
 /**
  * Event listener for HTTP server "error" event.
  */
-
+//http异常事件处理函数
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -81,7 +83,7 @@ function onError(error) {
 /**
  * Event listener for HTTP server "listening" event.
  */
-
+//事件绑定函数
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
