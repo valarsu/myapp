@@ -8,9 +8,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var debug = require('debug')('myapp:server');
-
+var settings = require('./settings');
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 var http = require('http');
-
+var flash = require('connect-flash');
 //加载路由routes/index  routes/users
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -37,6 +39,7 @@ app.set('views', path.join(__dirname, 'views'));
 //设置视图模板引擎为ejs
 app.set('view engine', 'ejs');
 
+app.use(flash());
 //设置/public/favicon.ico 为favicon图标
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 //加载日志中间件
@@ -59,6 +62,17 @@ routes(app);
 app.listen(app.get('port'), function() {
     console.log('Express server listening on port ' + app.get('port'));
 });
+
+app.use(session({
+    secret: settings.cookieSecret,//防止篡改cookie
+    key: settings.db,//cookie名字
+    cookie: {maxAge: 1000 * 60 * 60 * 24 * 30},//生存期
+    store: new MongoStore({
+        db: settings.db,
+        host: settings.host,
+        port: settings.port
+    })
+}));
 
 // 捕获404错误，并转发到错误处理器
 app.use(function(req, res, next) {
