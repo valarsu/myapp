@@ -8,13 +8,14 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var debug = require('debug')('myapp:server');
-var settings = require('./settings');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var http = require('http');
-var flash = require('connect-flash');
 //加载路由routes/index  routes/users
 var routes = require('./routes/index');
+var settings = require('./settings');
+var flash = require('connect-flash');
+
 var users = require('./routes/users');
 
 var app = express();//生成一个express实例
